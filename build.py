@@ -56,23 +56,23 @@ def create_tree():
   
   with open(".gitignore", 'w') as git_ignore:
     git_ignore.writelines( [
-      ".vscode"
-      ".yotta.json"
-      "*.bin"
-      "*.DS_Store"
-      "*.hex"
-      "*.pyc"
-      "*.swp"
-      "*.uf2"
-      "*~"
-      "build"
-      "buildcache.json"
-      "codal.json"
-      "libraries"
-      "Makefile"
-      "pxtapp"
-      "yotta_modules"
-      "yotta_targets"
+      ".vscode\n",
+      ".yotta.json\n",
+      "*.bin\n",
+      "*.DS_Store\n",
+      "*.hex\n",
+      "*.pyc\n",
+      "*.swp\n",
+      "*.uf2\n",
+      "*~\n",
+      "build\n",
+      "buildcache.json\n",
+      "codal.json\n",
+      "libraries\n",
+      "Makefile\n",
+      "pxtapp\n",
+      "yotta_modules\n",
+      "yotta_targets\n"
     ] )
 
 def download_targets():

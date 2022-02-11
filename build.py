@@ -24,6 +24,7 @@
 
 import json
 import os
+import shutil
 import sys
 import urllib.request
 import optparse
@@ -88,7 +89,7 @@ def library_clone( url, name, branch = "master", specfile = "module.json" ):
   print( f'Downloading library {name}...' )
   git_root = os.path.join( BASE_ROOT, 'libraries', name )
   if not exists( os.path.join( git_root, '.git' ) ):
-    os.system( f'git clone --branch "{branch}" "{url}" "{git_root}"' )
+    os.system( f'git clone --recurse-submodules --branch "{branch}" "{url}" "{git_root}"' )
 
   if exists( os.path.join( git_root, specfile ) ):
     return load_json( os.path.join( git_root, specfile ) )
@@ -121,11 +122,20 @@ if len(args) == 1:
   info = targets[query]
 
   create_tree()
-  library_clone( "https://github.com/lancaster-university/codal.git", "codal" )
+  library_clone( "https://github.com/lancaster-university/codal.git", "codal", branch="feature/bootstrap" )
+
+  # Copy out the base CMakeLists.txt, can't run from the library, and this is a CMake limitation
+  # Note; use copy2 here to preserve metadata
+  shutil.copy2(
+    os.path.join( BASE_ROOT, "libraries", "codal", "CMakeLists.txt" ),
+    os.path.join( BASE_ROOT, "CMakeLists.txt" )
+  )
 
   print( "Downloading target support files..." )
   details = library_clone( info["url"], info["name"], branch = info["branch"], specfile = "target.json" )
 
+  # This is _somewhat_ redundant as cmake does this as well, but it might be worth doing anyway as there might be
+  # additional library files needed for other, as-yet unidentified features. Plus, it makes the build faster afterwards -JV
   print( "Downloading libraries..." )
   for lib in details["libraries"]:
     library_clone( lib["url"], lib["name"], branch = lib["branch"] )
@@ -138,3 +148,8 @@ if len(args) == 1:
     config["target"]["dev"] = True
 
     json.dump( config, codal_json, indent=4 )
+  
+  print( "\n" )
+  print( "All done! You can now start developing your code in the source/ folder. Running ./build.py will now defer to the actual build tools" )
+  print( "Happy coding!" )
+  print( "" )

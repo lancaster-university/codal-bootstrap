@@ -1,6 +1,8 @@
-# CODAL-Bootstrap
+# CODAL-Bootstrap (ALPHA)
 
-Bootstrap a CODAL-based project from a single Python script
+Bootstrap a CODAL-based project from a single Python script.
+
+>**CAUTION: This is still in testing! Be very careful**
 
 ## Usage
 

@@ -26,7 +26,6 @@ import json
 import os
 import shutil
 import sys
-from syslog import LOG_WARNING
 import urllib.request
 import optparse
 import subprocess

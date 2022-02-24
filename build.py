@@ -28,6 +28,7 @@ import shutil
 import sys
 import urllib.request
 import optparse
+import subprocess
 
 from importlib import import_module
 from genericpath import exists
@@ -45,25 +46,6 @@ class PassThroughOptionParser(optparse.OptionParser):
         optparse.OptionParser._process_args(self, largs, rargs,values)
       except (optparse.BadOptionError, optparse.AmbiguousOptionError) as e:
         largs.append(e.opt_str)
-
-if exists( os.path.join(BASE_ROOT, "codal.json") ) and exists( os.path.join(BASE_ROOT, "libraries", "codal", "build.py") ):
-  parser = PassThroughOptionParser(add_help_option=False)
-  parser.add_option('--bootstrap', dest='force_bootstrap', action="store_true", default=False)
-  (options, args) = parser.parse_args()
-
-  if options.force_bootstrap:
-    print( "WARNING: '--bootstrap' forces bootstrap to take over, downloaded build tools will not be run!" )
-
-  if not options.force_bootstrap:
-    sys.path.append( os.path.join(BASE_ROOT, "libraries", "codal") )
-    import_module( f'libraries.codal.build' )
-    exit(0)
-
-parser = optparse.OptionParser(usage="usage: %prog target-name [options]", description="BOOTSTRAP MODE - Configures the current project directory for a specified target. Will defer to the latest build tools once configured.")
-parser.add_option('--bootstrap', dest='force_bootstrap', action='store_true', help="Skips any already downloaded build toolchain, and runs in bootstrap mode directly.", default=False)
-parser.add_option('--ignore-codal', dest='ignore_codal', action='store_true', help="Skips any pre-existing codal.json in the project folder, and runs as if none exists.", default=False)
-parser.add_option('--merge-upstream-target', dest='merge_upstream_target', action='store_true', help="Keeps the existing codal.json, but only for non-target parameters, merging the new target definition in with the old arguments.", default=False)
-(options, args) = parser.parse_args()
 
 def create_tree():
   path_list = [
@@ -118,6 +100,38 @@ def library_clone( url, name, branch = "master", specfile = "module.json" ):
   print( f'WARN: Missing specification file for {name}: {specfile}' )
   return {}
 
+def library_update( name, branch="", specfile = "module.json"):
+  print( f'Updating library {name}...' )
+  git_root = os.path.join( BASE_ROOT, 'libraries', name )
+  if not exists( git_root ):
+    raise Exception( f'No such library {name}' )
+  
+  if branch != "":
+    try:
+      subprocess.run( f'git checkout {branch}', cwd=git_root, shell=True )
+    except subprocess.CalledProcessError as err:
+      raise Exception( f'No such branch {branch} for library {name}' )
+
+  try:
+    subprocess.run( "git pull", cwd=git_root, shell=True )
+  except subprocess.CalledProcessError as err:
+    raise Exception( 'Unable to pull changes for ${name}' )
+
+  if exists( os.path.join( git_root, specfile ) ):
+    return load_json( os.path.join( git_root, specfile ) )
+
+  print( f'WARN: Missing specification file for {name}: {specfile}' )
+  return {}
+
+def library_version( name ):
+  try:
+    return subprocess.check_output( "git rev-parse --short HEAD", cwd=os.path.join( BASE_ROOT, "libraries", name ), shell=True ).decode( 'utf-8' )
+  except subprocess.CalledProcessError as err:
+    print( "library_version error:", err )
+    return ""
+  except FileNotFoundError as err:
+    return ""
+
 def load_json( path ):
   with open(path, 'r') as src:
     return json.load( src )
@@ -158,6 +172,53 @@ def list_valid_targets():
   targets = download_targets()
   for t in targets:
     print( f'{t:<30}: {targets[t]["info"]}' )
+
+if exists( os.path.join(BASE_ROOT, "codal.json") ) and exists( os.path.join(BASE_ROOT, "libraries", "codal", "build.py") ):
+  parser = PassThroughOptionParser(add_help_option=False)
+  parser.add_option('--bootstrap', dest='force_bootstrap', action="store_true", default=False)
+  parser.add_option('-u', dest='update', action='store_true', help="Update this file and the build tools library", default=False)
+  (options, args) = parser.parse_args()
+
+  if options.update:
+    print( "Attempting to automatically update bootstrap..." )
+    old_vers = library_version( 'codal-bootstrap' )
+    if exists(os.path.join( BASE_ROOT, "libraries", "codal-bootstrap" )):
+      library_update( "codal-bootstrap" )
+    else:
+      library_clone( "https://github.com/lancaster-university/codal-bootstrap.git", "codal-bootstrap", branch="main" )
+    vers = library_version( 'codal-bootstrap' )
+    
+    if vers == old_vers:
+      print( "Nothing to update, codal-bootstrap is already the latest version" )
+      exit( 0 )
+
+    print( "Downloaded a new version of bootstrap, updating the project files..." )
+    shutil.copy2(
+      os.path.join( BASE_ROOT, "libraries", "codal-bootstrap", "build.py" ),
+      os.path.join( BASE_ROOT, "build.py" )
+    )
+    shutil.copy2(
+      os.path.join( BASE_ROOT, "libraries", "codal-bootstrap", "CMakeLists.txt" ),
+      os.path.join( BASE_ROOT, "CMakeLists.txt" )
+    )
+
+    print( "Done! Happy coding :)\n" )
+
+    exit(0)
+
+  if options.force_bootstrap:
+    print( "WARNING: '--bootstrap' forces bootstrap to take over, downloaded build tools will not be run!" )
+
+  if not options.force_bootstrap:
+    sys.path.append( os.path.join(BASE_ROOT, "libraries", "codal") )
+    import_module( f'libraries.codal.build' )
+    exit(0)
+
+parser = optparse.OptionParser(usage="usage: %prog target-name [options]", description="BOOTSTRAP MODE - Configures the current project directory for a specified target. Will defer to the latest build tools once configured.")
+parser.add_option('--bootstrap', dest='force_bootstrap', action='store_true', help="Skips any already downloaded build toolchain, and runs in bootstrap mode directly.", default=False)
+parser.add_option('--ignore-codal', dest='ignore_codal', action='store_true', help="Skips any pre-existing codal.json in the project folder, and runs as if none exists.", default=False)
+parser.add_option('--merge-upstream-target', dest='merge_upstream_target', action='store_true', help="Keeps the existing codal.json, but only for non-target parameters, merging the new target definition in with the old arguments.", default=False)
+(options, args) = parser.parse_args()
 
 if len(args) == 0:
   # We might have an existing device config already, so grab that and try and pull that...

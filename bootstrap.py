@@ -1,6 +1,8 @@
 import urllib.request
 import subprocess
+import optparse
 
+import passthroughoptparser
 
 class Bootstrap:
     def __init__(self) -> None:
@@ -9,14 +11,8 @@ class Bootstrap:
 
 
 # Old code #
+"""
 
-class PassThroughOptionParser(optparse.OptionParser):
-  def _process_args(self, largs, rargs, values):
-    while rargs:
-      try:
-        optparse.OptionParser._process_args(self, largs, rargs,values)
-      except (optparse.BadOptionError, optparse.AmbiguousOptionError) as e:
-        largs.append(e.opt_str)
 
 def create_tree():
   path_list = [
@@ -222,4 +218,4 @@ if len(args) == 1:
     log_info( "Preserving local configuration, but ignoring the target and using supplied user target..." )
     local_config = load_json( os.path.join( BASE_ROOT, "codal.json" ) )
 
-  go_configure( targets[query], config=local_config )
+  go_configure( targets[query], config=local_config )"""

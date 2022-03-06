@@ -37,6 +37,10 @@ jobs:
           cmake --version
           ninja --version
           python --version
+      - name: TEMPORARY: Install colorama dependency, needed for log colours
+        run: |
+          python -m pip install --upgrade pip
+          pip install colorama
       - name: Bootstrap a new project
         run: |
           git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/lancaster-university/codal-bootstrap.git temp

@@ -34,6 +34,7 @@ TARGET_LIST = [
     "https://raw.githubusercontent.com/lancaster-university/codal/master/utils/targets.json"
 ]
 BASE_ROOT = os.getcwd()
+BOOTSTRAP_ROOT = os.path.join( BASE_ROOT, 'libraries', 'codal-bootstrap' )
 
 print( "WARNING: This is a CODAL-Bootstrap build. CODAL-Bootstrap is still in ALPHA, expect bugs!" )
 
@@ -44,10 +45,9 @@ if not exists( os.path.join( BASE_ROOT, 'libraries' ) ):
 # Grab the latest library
 if not exists( os.path.join( BASE_ROOT, 'libraries', 'codal-bootstrap' ) ):
   print( f'Downloading codal-bootstrap...' )
-  bootstrap_root = os.path.join( BASE_ROOT, 'libraries', 'codal-bootstrap' )
-  if not exists( os.path.join( bootstrap_root, '.git' ) ):
-    os.system( f'git clone --recurse-submodules --branch "{BOOTSTRAP_TAG}" "https://github.com/lancaster-university/codal-bootstrap.git" "{bootstrap_root}"' )
+  if not exists( os.path.join( BOOTSTRAP_ROOT, '.git' ) ):
+    os.system( f'git clone --recurse-submodules --branch "{BOOTSTRAP_TAG}" "https://github.com/lancaster-university/codal-bootstrap.git" "{BOOTSTRAP_ROOT}"' )
 
 # Jump into the current upstream code
-sys.path.append( bootstrap_root )
+sys.path.append( BOOTSTRAP_ROOT )
 import_module( f'libraries.codal-bootstrap.bootstrap' )

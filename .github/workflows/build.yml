@@ -41,11 +41,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install colorama
-      - name: Bootstrap a new project
+      - name: Clone the bootstrap sources
+        working-directory: ${{ runner.temp }}
         run: |
-          git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/lancaster-university/codal-bootstrap.git temp
-          cp temp/build.py .
-          rm -rf temp
+          git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/lancaster-university/codal-bootstrap.git .
+      - name: Create a new base project
+        run: |
+          copy ${{ runner.temp }}/build.py ./build.py
           ./build.py
       - name: Pull libraries for a target (microbit-v2)
         run: |

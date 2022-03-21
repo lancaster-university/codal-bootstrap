@@ -21,9 +21,10 @@ def library_version( name ):
   try:
     return subprocess.check_output( "git rev-parse --short HEAD", cwd=os.path.join( BASE_ROOT, "libraries", name ), shell=True ).decode( 'utf-8' )
   except subprocess.CalledProcessError as err:
-    Log.error( "library_version error:", err )
+    Log.error( F"library_version error: {err}" )
     return "BAD-VERSION"
   except FileNotFoundError as err:
+    Log.error( F"library_version file not found: {err}" )
     return "BAD-REPO"
 
 BOOTSTRAP_VERSION = library_version( 'bootstrap' )

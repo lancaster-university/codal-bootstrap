@@ -45,7 +45,7 @@ def create_tree():
 
 
 def download_targets( target_list ):
-  Log.nfo( "Downloading valid targets..." )
+  Log.info( "Downloading valid targets..." )
   cache = {}
   for url in target_list:
     r = urllib.request.urlopen( url )

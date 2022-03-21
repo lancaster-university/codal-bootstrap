@@ -1,18 +1,38 @@
 #import urllib.request
-#import subprocess
 #import optparse
 
 #import passthroughoptparser
 
 import os
 import shutil
+import pathlib
+import subprocess
+from genericpath import exists
 from log import Log
 
+
+BASE_ROOT = os.getcwd()
+BOOTSTRAP_ROOT = pathlib.Path(__file__).parent.absolute()
+
 Log.warn( F"Bootstrap path: {BOOTSTRAP_ROOT}" )
+Log.warn( F"Project root: {BASE_ROOT}" )
+Log.warn( F"Bootstrap Version: {BOOTSTRAP_VERSION}" )
+
+def library_version( name ):
+  try:
+    return subprocess.check_output( "git rev-parse --short HEAD", cwd=os.path.join( BASE_ROOT, "libraries", name ), shell=True ).decode( 'utf-8' )
+  except subprocess.CalledProcessError as err:
+    Log.error( "library_version error:", err )
+    return "BAD-VERSION"
+  except FileNotFoundError as err:
+    return "BAD-REPO"
+
+BOOTSTRAP_VERSION = library_version( 'bootstrap' )
 
 def create_tree():
   path_list = [
     "libraries",
+    "docs",
     "build",
     "source"
   ]
@@ -73,15 +93,6 @@ def library_update( name, branch="", specfile = "module.json"):
 
   log_warn( f'WARN: Missing specification file for {name}: {specfile}' )
   return {}
-
-def library_version( name ):
-  try:
-    return subprocess.check_output( "git rev-parse --short HEAD", cwd=os.path.join( BASE_ROOT, "libraries", name ), shell=True ).decode( 'utf-8' )
-  except subprocess.CalledProcessError as err:
-    print( "library_version error:", err )
-    return ""
-  except FileNotFoundError as err:
-    return ""
 
 def go_configure( info, config={} ):
   create_tree()

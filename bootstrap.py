@@ -1,15 +1,15 @@
-#import urllib.request
-#import optparse
-
-#import passthroughoptparser
-
+import json
 import os
 import shutil
 import pathlib
 import subprocess
+import urllib.request
+import optparse
+from importlib import import_module
 from genericpath import exists
 from passthroughoptparser import PassThroughOptionParser
 from log import Log
+from colorama import Style
 
 BASE_ROOT = os.getcwd()
 BOOTSTRAP_ROOT = pathlib.Path(__file__).parent.absolute()
@@ -44,10 +44,10 @@ def create_tree():
   )
 
 
-def download_targets():
+def download_targets( target_list ):
   Log.nfo( "Downloading valid targets..." )
   cache = {}
-  for url in TARGET_LIST:
+  for url in target_list:
     r = urllib.request.urlopen( url )
     for t in json.load( r ):
       cache[ t["name"] ] = t
@@ -92,9 +92,9 @@ def library_update( name, branch="", specfile = "module.json"):
   Log.warn( f'WARN: Missing specification file for {name}: {specfile}' )
   return {}
 
-def go_configure( info, config={} ):
+def go_configure( info, toolchain_url, config={} ):
   create_tree()
-  library_clone( TOOLCHAIN_URL, "codal", branch="feature/bootstrap" )
+  library_clone( toolchain_url, "codal", branch="feature/bootstrap" )
 
   # Copy out the base CMakeLists.txt, can't run from the library, and this is a CMake limitation
   # Note; use copy2 here to preserve metadata
@@ -129,7 +129,7 @@ def list_valid_targets():
   for t in targets:
     print( f'{t:<30}: {targets[t]["info"]}' )
 
-def go_bootstrap():
+def go_bootstrap( target_list, toolchain_url ):
   if exists( os.path.join(BASE_ROOT, "codal.json") ) and exists( os.path.join(BASE_ROOT, "libraries", "codal", "build.py") ):
     parser = PassThroughOptionParser(add_help_option=False)
     parser.add_option('--bootstrap', dest='force_bootstrap', action="store_true", default=False)
@@ -196,7 +196,7 @@ def go_bootstrap():
       list_valid_targets()
       exit( 0 )
     
-    targets = download_targets()
+    targets = download_targets( target_list )
     query = args[0]
 
     if query not in targets:
@@ -208,4 +208,4 @@ def go_bootstrap():
       Log.info( "Preserving local configuration, but ignoring the target and using supplied user target..." )
       local_config = load_json( os.path.join( BASE_ROOT, "codal.json" ) )
 
-    go_configure( targets[query], config=local_config )
+    go_configure( targets[query], toolchain_url, config=local_config )

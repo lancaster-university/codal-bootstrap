@@ -50,4 +50,4 @@ if not exists( os.path.join( BASE_ROOT, 'libraries', 'codal-bootstrap' ) ):
 # Jump into the current upstream code
 sys.path.append( BOOTSTRAP_ROOT )
 bootstrap = import_module( f'libraries.codal-bootstrap.bootstrap' )
-bootstrap.go_bootstrap( TARGET_LIST, TOOLCHAIN_URL )
+bootstrap.go_bootstrap( TARGET_LIST )

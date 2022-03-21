@@ -46,7 +46,7 @@ if not exists( os.path.join( BASE_ROOT, 'libraries' ) ):
 if not exists( os.path.join( BASE_ROOT, 'libraries', 'codal-bootstrap' ) ):
   print( "Downloading codal-bootstrap..." )
   if not exists( os.path.join( BOOTSTRAP_ROOT, '.git' ) ):
-    os.system( f'git clone --recurse-submodules --branch "{BOOTSTRAP_TAG}" "https://github.com/lancaster-university/codal-bootstrap.git" "{BOOTSTRAP_ROOT}"' )
+    os.system( f'git clone --recurse-submodules --branch "{BOOTSTRAP_TAG}" {TOOLCHAIN_URL} "{BOOTSTRAP_ROOT}"' )
 
 # Jump into the current upstream code
 sys.path.append( BOOTSTRAP_ROOT )

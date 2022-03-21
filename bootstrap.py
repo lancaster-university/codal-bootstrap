@@ -54,15 +54,16 @@ def download_targets( target_list ):
   return cache
 
 def library_clone( url, name, branch = "master", specfile = "module.json" ):
-  print( f'Downloading library {name}...' )
+  Log.info( f'Downloading library {name}...' )
   git_root = os.path.join( BASE_ROOT, 'libraries', name )
   if not exists( os.path.join( git_root, '.git' ) ):
+    Log.warn( f'git clone --recurse-submodules --branch "{branch}" "{url}" "{git_root}"' )
     os.system( f'git clone --recurse-submodules --branch "{branch}" "{url}" "{git_root}"' )
 
   if exists( os.path.join( git_root, specfile ) ):
     return load_json( os.path.join( git_root, specfile ) )
 
-  print( f'WARN: Missing specification file for {name}: {specfile}' )
+  Log.info( f'WARN: Missing specification file for {name}: {specfile}' )
   return {}
 
 def load_json( path ):

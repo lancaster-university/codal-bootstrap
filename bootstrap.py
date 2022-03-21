@@ -27,7 +27,7 @@ def library_version( name ):
     Log.error( F"library_version file not found: {err}" )
     return "BAD-REPO"
 
-BOOTSTRAP_VERSION = library_version( 'bootstrap' )
+BOOTSTRAP_VERSION = library_version( 'codal-bootstrap' )
 Log.warn( F"Bootstrap Version: {BOOTSTRAP_VERSION}" )
 
 def create_tree():

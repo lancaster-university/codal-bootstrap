@@ -124,8 +124,8 @@ def go_configure( info, toolchain_url, config={} ):
   print( "Happy coding!" + Style.RESET_ALL )
   print( "" )
 
-def list_valid_targets():
-  targets = download_targets()
+def list_valid_targets( target_list ):
+  targets = download_targets( target_list )
   for t in targets:
     print( f'{t:<30}: {targets[t]["info"]}' )
 
@@ -185,7 +185,7 @@ def go_bootstrap( target_list, toolchain_url ):
       exit(0)
 
     Log.warn( "Please supply an initial target to build against:" )
-    list_valid_targets()
+    list_valid_targets( target_list )
     exit( 0 )
 
   if len(args) == 1:
@@ -193,7 +193,7 @@ def go_bootstrap( target_list, toolchain_url ):
     # 'Magic' target to list all targets
     if args[0] == "ls":
       Log.info( "Available target platforms:" )
-      list_valid_targets()
+      list_valid_targets( target_list )
       exit( 0 )
     
     targets = download_targets( target_list )

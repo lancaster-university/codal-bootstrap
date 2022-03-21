@@ -16,7 +16,6 @@ BOOTSTRAP_ROOT = pathlib.Path(__file__).parent.absolute()
 
 Log.warn( F"Bootstrap path: {BOOTSTRAP_ROOT}" )
 Log.warn( F"Project root: {BASE_ROOT}" )
-Log.warn( F"Bootstrap Version: {BOOTSTRAP_VERSION}" )
 
 def library_version( name ):
   try:
@@ -28,6 +27,7 @@ def library_version( name ):
     return "BAD-REPO"
 
 BOOTSTRAP_VERSION = library_version( 'bootstrap' )
+Log.warn( F"Bootstrap Version: {BOOTSTRAP_VERSION}" )
 
 def create_tree():
   path_list = [

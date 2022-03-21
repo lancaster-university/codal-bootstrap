@@ -1,18 +1,14 @@
-import urllib.request
-import subprocess
-import optparse
+#import urllib.request
+#import subprocess
+#import optparse
 
-import passthroughoptparser
+#import passthroughoptparser
 
-class Bootstrap:
-    def __init__(self) -> None:
-        pass
+import os
+import shutil
+from log import Log
 
-
-
-# Old code #
-"""
-
+Log.warn( F"Bootstrap path: {BOOTSTRAP_ROOT}" )
 
 def create_tree():
   path_list = [
@@ -24,28 +20,12 @@ def create_tree():
     if not exists( os.path.join( BASE_ROOT, p ) ):
       os.mkdir( os.path.join( BASE_ROOT, p ) )
   
-  with open(".gitignore", 'w') as git_ignore:
-    git_ignore.writelines( [
-      ".vscode\n",
-      ".yotta.json\n",
-      "*.bin\n",
-      "*.DS_Store\n",
-      "*.hex\n",
-      "*.pyc\n",
-      "*.swp\n",
-      "*.uf2\n",
-      "*.pyc\n",
-      "*~\n",
-      "build\n",
-      "buildcache.json\n",
-      "codal.json\n",
-      "libraries\n",
-      "Makefile\n",
-      "pxtapp\n",
-      "yotta_modules\n",
-      "yotta_targets\n"
-    ] )
+  shutil.copy2(
+    os.path.join( BOOTSTRAP_ROOT, "templates", "gitignore.template" ),
+    os.path.join( BOOTSTRAP_ROOT, ".gitignore" )
+  )
 
+"""
 def download_targets():
   log_info( "Downloading valid targets..." )
   cache = {}

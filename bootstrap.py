@@ -181,7 +181,7 @@ def go_build_docs():
         output.write( line );
 
   Log.info( "Grabbing the default theme (if not present)" )
-  if not exists( os.path.join(BASE_ROOT, "docs", "theme"):
+  if not exists( os.path.join(BASE_ROOT, "docs", "theme") ):
     Log.info( "Downloading the default theme - to inhibit this behaviour, create your own theme/ path inside docs/" )
     os.system( F'git clone -b v2.0.2 https://github.com/jothepro/doxygen-awesome-css.git "{os.path.join(BASE_ROOT, "docs", "theme")}"' )
   

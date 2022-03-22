@@ -142,11 +142,11 @@ def merge_json(base_obj, delta_obj):
 
 def go_build_docs():
   config = {
-    "PROJECT_NAME": "default name",
+    "PROJECT_NAME": "codal project",
     "PROJECT_NUMBER": "",
     "PROJECT_BRIEF": "",
     "PROJECT_LOGO": "",
-    "INPUT": []
+    "INPUT": [ "source" ]
   }
   if( exists( os.path.join( BASE_ROOT, "docs.json" ) ) ):
     Log.info( "Merging user config from docs.json" )

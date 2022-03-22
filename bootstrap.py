@@ -142,7 +142,7 @@ def merge_json(base_obj, delta_obj):
 
 def go_build_docs():
   config = {
-    "PROJECT_NAME": "codal project",
+    "PROJECT_NAME": "Codal Project",
     "PROJECT_NUMBER": "",
     "PROJECT_BRIEF": "",
     "PROJECT_LOGO": "",

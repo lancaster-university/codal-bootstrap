@@ -17,7 +17,7 @@ CODAL_URL = "https://github.com/lancaster-university/codal.git"
 BASE_ROOT = os.getcwd()
 BOOTSTRAP_ROOT = pathlib.Path(__file__).parent.absolute()
 
-"""def library_version( name ):
+def library_version( name ):
   try:
     return subprocess.check_output( "git rev-parse --short HEAD", cwd=os.path.join( BASE_ROOT, "libraries", name ), shell=True ).decode( 'utf-8' )
   except subprocess.CalledProcessError as err:
@@ -26,9 +26,6 @@ BOOTSTRAP_ROOT = pathlib.Path(__file__).parent.absolute()
   except FileNotFoundError as err:
     Log.error( F"library_version file not found: {err}" )
     return "BAD-REPO"
-
-# Must come after the library_version def, but before any other internals, as it can be used in those...
-BOOTSTRAP_VERSION = library_version( 'codal-bootstrap' )"""
 
 def create_tree():
   path_list = [
@@ -172,7 +169,8 @@ def go_build_docs():
       Log.info( F"Including {lib} documentation..." )
       libspec = load_json( libdef )
       if "docs" in libspec and "INPUT" in libspec["docs"]:
-        config["INPUT"].extend( libspec["docs"]["INPUT"] )
+        print( config["INPUT"] )
+        config["INPUT"].extend( os.path.join(BASE_ROOT, "libraries", lib, libspec["docs"]["INPUT"] ) )
 
   with open( os.path.join( BOOTSTRAP_ROOT, "templates", "Doxyfile.template" ), 'r' ) as template:
     with open( os.path.join( BASE_ROOT, "Doxyfile" ), 'w' ) as output:

@@ -174,14 +174,19 @@ def go_build_docs():
       config[key] = '"' +config[key]+ '"'
 
   with open( os.path.join( BOOTSTRAP_ROOT, "templates", "Doxyfile.template" ), 'r' ) as template:
-    with open( os.path.join( BASE_ROOT, "Doxyfile" ), 'w' ) as output:
+    with open( os.path.join( BASE_ROOT, "docs", "Doxyfile" ), 'w' ) as output:
       for line in template.readlines():
         for key in set(config):
           line = line.replace( "{{" +key+ "}}", config[key] )
         output.write( line );
+
+  Log.info( "Grabbing the default theme (if not present)" )
+  if not exists( os.path.join(BASE_ROOT, "docs", "theme"):
+    Log.info( "Downloading the default theme - to inhibit this behaviour, create your own theme/ path inside docs/" )
+    os.system( F'git clone -b v2.0.2 https://github.com/jothepro/doxygen-awesome-css.git "{os.path.join(BASE_ROOT, "docs", "theme")}"' )
   
   Log.info( "Building with doxygen..." )
-  os.system( F'doxygen "{os.path.join( BASE_ROOT, "Doxyfile" )}"' )
+  os.system( F'doxygen "{os.path.join( BASE_ROOT, "docs", "Doxyfile" )}"' )
 
 def go_bootstrap( target_list ):
   if exists( os.path.join(BASE_ROOT, "codal.json") ) and exists( os.path.join(BASE_ROOT, "libraries", "codal", "build.py") ):

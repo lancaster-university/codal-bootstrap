@@ -1,4 +1,5 @@
 import json
+from ntpath import join
 import os
 import sys
 import shutil
@@ -16,7 +17,7 @@ CODAL_URL = "https://github.com/lancaster-university/codal.git"
 BASE_ROOT = os.getcwd()
 BOOTSTRAP_ROOT = pathlib.Path(__file__).parent.absolute()
 
-def library_version( name ):
+"""def library_version( name ):
   try:
     return subprocess.check_output( "git rev-parse --short HEAD", cwd=os.path.join( BASE_ROOT, "libraries", name ), shell=True ).decode( 'utf-8' )
   except subprocess.CalledProcessError as err:
@@ -27,7 +28,7 @@ def library_version( name ):
     return "BAD-REPO"
 
 # Must come after the library_version def, but before any other internals, as it can be used in those...
-BOOTSTRAP_VERSION = library_version( 'codal-bootstrap' )
+BOOTSTRAP_VERSION = library_version( 'codal-bootstrap' )"""
 
 def create_tree():
   path_list = [
@@ -131,6 +132,58 @@ def list_valid_targets( target_list ):
   for t in targets:
     print( f'{t:<30}: {targets[t]["info"]}' )
 
+def merge_json(base_obj, delta_obj):
+  if not isinstance(base_obj, dict):
+    return delta_obj
+  common_keys = set(base_obj).intersection(delta_obj)
+  new_keys = set(delta_obj).difference(common_keys)
+  for k in common_keys:
+    base_obj[k] = merge_json(base_obj[k], delta_obj[k])
+  for k in new_keys:
+    base_obj[k] = delta_obj[k]
+  return base_obj
+
+def go_build_docs():
+  config = {
+    "PROJECT_NAME": "default name",
+    "PROJECT_NUMBER": "",
+    "PROJECT_BRIEF": "",
+    "PROJECT_LOGO": "",
+    "INPUT": []
+  }
+  if( exists( os.path.join( BASE_ROOT, "docs.json" ) ) ):
+    Log.info( "Merging user config from docs.json" )
+    userConfig = load_json( os.path.join(BASE_ROOT, "docs.json") )
+    config = merge_json( config, userConfig )
+  
+  def quoteString( _in ):
+    return '"' + str(_in) + '"'
+
+  for key in set(config):
+    if type(config[key]) == list:
+      config[key] = map( quoteString, config[key] )
+      config[key] = " \\\n                         ".join( config[key] )
+    else:
+      config[key] = '"' +config[key]+ '"'
+  
+  for lib in os.listdir( os.path.join(BASE_ROOT, "libraries") ):
+    libdef = os.path.join(BASE_ROOT, "libraries", lib, "library.json")
+    if exists( libdef ):
+      Log.info( F"Including {lib} documentation..." )
+      libspec = load_json( libdef )
+      if "docs" in libspec and "INPUT" in libspec["docs"]:
+        config["INPUT"].extend( libspec["docs"]["INPUT"] )
+
+  with open( os.path.join( BOOTSTRAP_ROOT, "templates", "Doxyfile.template" ), 'r' ) as template:
+    with open( os.path.join( BASE_ROOT, "Doxyfile" ), 'w' ) as output:
+      for line in template.readlines():
+        for key in set(config):
+          line = line.replace( "{{" +key+ "}}", config[key] )
+        output.write( line );
+  
+  Log.info( "Building with doxygen..." )
+  os.system( F'doxygen "{os.path.join( BASE_ROOT, "Doxyfile" )}"' )
+
 def go_bootstrap( target_list ):
   if exists( os.path.join(BASE_ROOT, "codal.json") ) and exists( os.path.join(BASE_ROOT, "libraries", "codal", "build.py") ):
     parser = PassThroughOptionParser(add_help_option=False)
@@ -149,8 +202,13 @@ def go_bootstrap( target_list ):
   parser.add_option('--bootstrap', dest='force_bootstrap', action='store_true', help="Skips any already downloaded build toolchain, and runs in bootstrap mode directly.", default=False)
   parser.add_option('--ignore-codal', dest='ignore_codal', action='store_true', help="Skips any pre-existing codal.json in the project folder, and runs as if none exists.", default=False)
   parser.add_option('--merge-upstream-target', dest='merge_upstream_target', action='store_true', help="Keeps the existing codal.json, but only for non-target parameters, merging the new target definition in with the old arguments.", default=False)
+  parser.add_option('--makedocs', dest='makedocs', action='store_true', help='Builds documentation (including supported libraries) with doxygen')
   parser.add_option('-u', dest='update', action='store_true', help="Update this file and the build tools library", default=False)
   (options, args) = parser.parse_args()
+
+  if options.makedocs:
+    go_build_docs()
+    exit(0)
 
   if options.update:
     Log.info( "Attempting to automatically update bootstrap..." )

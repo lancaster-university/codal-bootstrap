@@ -170,7 +170,8 @@ def go_build_docs():
       libspec = load_json( libdef )
       if "docs" in libspec and "INPUT" in libspec["docs"]:
         print( config["INPUT"] )
-        config["INPUT"].extend( os.path.join(BASE_ROOT, "libraries", lib, libspec["docs"]["INPUT"] ) )
+        for inc in libspec["docs"]["INPUT"]:
+          config["INPUT"].append( os.path.join(BASE_ROOT, "libraries", lib, inc ) )
 
   with open( os.path.join( BOOTSTRAP_ROOT, "templates", "Doxyfile.template" ), 'r' ) as template:
     with open( os.path.join( BASE_ROOT, "Doxyfile" ), 'w' ) as output:

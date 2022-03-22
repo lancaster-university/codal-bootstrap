@@ -155,13 +155,6 @@ def go_build_docs():
   
   def quoteString( _in ):
     return '"' + str(_in) + '"'
-
-  for key in set(config):
-    if type(config[key]) == list:
-      config[key] = map( quoteString, config[key] )
-      config[key] = " \\\n                         ".join( config[key] )
-    else:
-      config[key] = '"' +config[key]+ '"'
   
   for lib in os.listdir( os.path.join(BASE_ROOT, "libraries") ):
     libdef = os.path.join(BASE_ROOT, "libraries", lib, "library.json")
@@ -172,6 +165,13 @@ def go_build_docs():
         print( config["INPUT"] )
         for inc in libspec["docs"]["INPUT"]:
           config["INPUT"].append( os.path.join(BASE_ROOT, "libraries", lib, inc ) )
+  
+  for key in set(config):
+    if type(config[key]) == list:
+      config[key] = map( quoteString, config[key] )
+      config[key] = " \\\n                         ".join( config[key] )
+    else:
+      config[key] = '"' +config[key]+ '"'
 
   with open( os.path.join( BOOTSTRAP_ROOT, "templates", "Doxyfile.template" ), 'r' ) as template:
     with open( os.path.join( BASE_ROOT, "Doxyfile" ), 'w' ) as output:

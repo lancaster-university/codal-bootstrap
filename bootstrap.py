@@ -146,7 +146,7 @@ def go_build_docs():
     "PROJECT_NUMBER": "",
     "PROJECT_BRIEF": "",
     "PROJECT_LOGO": "",
-    "INPUT": [ "source" ]
+    "INPUT": [ "source", "docs/pages" ]
   }
   if( exists( os.path.join( BASE_ROOT, "docs.json" ) ) ):
     Log.info( "Merging user config from docs.json" )
@@ -164,7 +164,7 @@ def go_build_docs():
       if "docs" in libspec and "INPUT" in libspec["docs"]:
         print( config["INPUT"] )
         for inc in libspec["docs"]["INPUT"]:
-          config["INPUT"].append( os.path.join(BASE_ROOT, "libraries", lib, inc ) )
+          config["INPUT"].insert( 0, os.path.join(BASE_ROOT, "libraries", lib, inc ) )
   
   for key in set(config):
     if type(config[key]) == list:
@@ -173,17 +173,28 @@ def go_build_docs():
     else:
       config[key] = '"' +config[key]+ '"'
 
-  with open( os.path.join( BOOTSTRAP_ROOT, "templates", "Doxyfile.template" ), 'r' ) as template:
-    with open( os.path.join( BASE_ROOT, "docs", "Doxyfile" ), 'w' ) as output:
-      for line in template.readlines():
-        for key in set(config):
-          line = line.replace( "{{" +key+ "}}", config[key] )
-        output.write( line );
+  # Create the actual Doxyfile from our template, if non exists
+  if not exists( os.path.join( BASE_ROOT, "docs", "Doxyfile" ) ):
+    with open( os.path.join( BOOTSTRAP_ROOT, "templates", "Doxyfile.template" ), 'r' ) as template:
+      with open( os.path.join( BASE_ROOT, "docs", "Doxyfile" ), 'w' ) as output:
+        for line in template.readlines():
+          for key in set(config):
+            line = line.replace( "{{" +key+ "}}", config[key] )
+          output.write( line );
+  else:
+    Log.info( "Skipped creating a Doxyfile, as one already exists" )
 
+  # Download and configure the theme if we don't have one already
   Log.info( "Grabbing the default theme (if not present)" )
   if not exists( os.path.join(BASE_ROOT, "docs", "theme") ):
     Log.info( "Downloading the default theme - to inhibit this behaviour, create your own theme/ path inside docs/" )
     os.system( F'git clone -b v2.0.2 https://github.com/jothepro/doxygen-awesome-css.git "{os.path.join(BASE_ROOT, "docs", "theme")}"' )
+    shutil.copy2(
+      os.path.join( BOOTSTRAP_ROOT, "templates", "overrides.css" ),
+      os.path.join( BASE_ROOT, "docs", "overrides.css" )
+    );
+  else:
+    Log.info( "Skipped downloading the default theme, as docs/theme/ already exists" )
   
   Log.info( "Building with doxygen..." )
   os.system( F'doxygen "{os.path.join( BASE_ROOT, "docs", "Doxyfile" )}"' )

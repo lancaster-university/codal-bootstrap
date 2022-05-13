@@ -1,0 +1,11 @@
+#titlearea > table {
+    width: 100%;
+}
+
+#projectalign {
+    width: 329px;
+}
+
+.header {
+    border-bottom: none;
+}

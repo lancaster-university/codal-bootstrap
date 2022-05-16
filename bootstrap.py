@@ -120,8 +120,8 @@ def go_configure( info, config={} ):
     json.dump( config, codal_json, indent=4 )
   
   print( "\n" )
-  print( Style.BRIGHT + "All done! You can now start developing your code in the source/ folder. Running ./build.py will now defer to the actual build tools" )
-  print( "Happy coding!" + Style.RESET_ALL )
+  print( "All done! You can now start developing your code in the source/ folder. Running ./build.py will now defer to the actual build tools" )
+  print( "Happy coding!" )
   print( "" )
 
 def list_valid_targets( target_list ):

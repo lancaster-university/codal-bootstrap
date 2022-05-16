@@ -28,7 +28,7 @@ import sys
 from importlib import import_module
 from genericpath import exists
 
-BOOTSTRAP_TAG = "feature/tiny"
+BOOTSTRAP_TAG = "main"
 TARGET_LIST = [
     "https://raw.githubusercontent.com/lancaster-university/codal/master/utils/targets.json"
 ]

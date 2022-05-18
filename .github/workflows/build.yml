@@ -10,7 +10,7 @@ jobs:
   build-py-script:
     strategy:
       matrix:
-        os: [ubuntu-18.04, macos-latest, windows-2016]
+        os: [ubuntu-18.04, macos-latest, windows-latest]
         gcc: ['7-2017-q4', 'latest']
         cmake: ['3.6.0', '3.21.3']
       fail-fast: false
@@ -52,3 +52,10 @@ jobs:
       - name: Pull libraries for a target (microbit-v2)
         run: |
           ./build.py codal-microbit-v2
+      - name: Compile the example application
+        run: |
+          ./build.py
+      - name: "Check the build actually generated a hex file"
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "MICROBIT.hex"

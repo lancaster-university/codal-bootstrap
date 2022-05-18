@@ -46,7 +46,6 @@ jobs:
         run: |
           git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/lancaster-university/codal-bootstrap.git bootstrap
       - name: Create a new base project
-        shell: bash
         run: |
           cp ${{ runner.temp }}/bootstrap/build.py ./build.py
           python ./build.py

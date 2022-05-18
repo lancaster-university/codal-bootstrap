@@ -4,7 +4,7 @@
 MicroBit uBit;
 
 // Out main function, run at startup
-void main() {
+int main() {
 
     // Loop forever
     while( true ) {
@@ -12,4 +12,6 @@ void main() {
         uBit.display.scroll( "Hello, Bootstrap!" );
     }
 
+    // Will never return, but here so the compiler is happy :)
+    return 0;
 }

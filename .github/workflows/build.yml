@@ -48,11 +48,7 @@ jobs:
       - name: Create a new base project
         shell: bash
         run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            copy ${{ runner.temp }}/bootstrap/build.py ./build.py
-          else
-            cp ${{ runner.temp }}/bootstrap/build.py ./build.py
-          fi
+          cp ${{ runner.temp }}/bootstrap/build.py ./build.py
           python ./build.py
       - name: Pull libraries for a target (microbit-v2)
         run: |

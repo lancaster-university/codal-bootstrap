@@ -47,15 +47,18 @@ jobs:
           git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/lancaster-university/codal-bootstrap.git bootstrap
       - name: Create a new base project
         run: |
-          copy ${{ runner.temp }}/bootstrap/build.py ./build.py
-          ./build.py
+          cp ${{ runner.temp }}/bootstrap/build.py ./build.py
+          python ./build.py
       - name: Pull libraries for a target (microbit-v2)
         run: |
-          ./build.py codal-microbit-v2
+          python ./build.py codal-microbit-v2
       - name: Compile the example application
         run: |
-          ./build.py
+          python ./build.py
       - name: "Check the build actually generated a hex file"
         uses: andstor/file-existence-action@v1
         with:
           files: "MICROBIT.hex"
+      - name: File exists
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: echo Hex file built!

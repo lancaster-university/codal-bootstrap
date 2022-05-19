@@ -1,5 +1,7 @@
 # CODAL-Bootstrap (ALPHA)
 
+[![Bootstrap a new project from scratch](https://github.com/lancaster-university/codal-bootstrap/actions/workflows/build.yml/badge.svg?branch=main&event=push)](https://github.com/lancaster-university/codal-bootstrap/actions/workflows/build.yml)
+
 Bootstrap a CODAL-based project from a single Python script.
 
 An example of creating a microbit-v2 project from just one initial build file:

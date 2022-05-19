@@ -16,7 +16,7 @@ jobs:
         target: [ 'codal-microbit-v2' ]
       fail-fast: false
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os }}, gcc ${{ matrix.gcc }}, cmake ${{ matrix.cmake || 'latest'}}
+    name: ${{ matrix.os }}, gcc ${{ matrix.gcc }}, cmake ${{ matrix.cmake || 'latest'}}, target ${{ matrix.target }}
     steps:
       - name: Setup Python
         uses: actions/setup-python@v2

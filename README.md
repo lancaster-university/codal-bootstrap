@@ -2,8 +2,6 @@
 
 Bootstrap a CODAL-based project from a single Python script.
 
->**CAUTION: This is still in testing! Be very careful**
-
 An example of creating a microbit-v2 project from just one initial build file:
 [![asciicast](https://asciinema.org/a/9UiUwL1klBN58UYuqDJo1IY1E.svg)](https://asciinema.org/a/9UiUwL1klBN58UYuqDJo1IY1E)
 

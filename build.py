@@ -35,8 +35,6 @@ TARGET_LIST = [
 BASE_ROOT = os.getcwd()
 BOOTSTRAP_ROOT = os.path.join( BASE_ROOT, 'libraries', 'codal-bootstrap' )
 
-print( "WARNING: This is a CODAL-Bootstrap build. CODAL-Bootstrap is still in ALPHA, expect bugs!" )
-
 # Minimum folder structure:
 if not exists( os.path.join( BASE_ROOT, 'libraries' ) ):
   os.mkdir( os.path.join( BASE_ROOT, 'libraries' ) );

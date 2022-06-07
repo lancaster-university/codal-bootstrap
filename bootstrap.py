@@ -59,15 +59,17 @@ def create_tree():
     if not exists( os.path.join( BASE_ROOT, p ) ):
       os.mkdir( os.path.join( BASE_ROOT, p ) )
   
-  shutil.copy2(
-    os.path.join( BOOTSTRAP_ROOT, "templates", "gitignore.template" ),
-    os.path.join( BASE_ROOT, ".gitignore" )
-  )
+  if not exists( os.path.join( BASE_ROOT, ".gitignore" ) ):
+    shutil.copy2(
+      os.path.join( BOOTSTRAP_ROOT, "templates", "gitignore.template" ),
+      os.path.join( BASE_ROOT, ".gitignore" )
+    )
 
-  shutil.copy2(
-    os.path.join( BOOTSTRAP_ROOT, "templates", "main.cpp" ),
-    os.path.join( BASE_ROOT, "source", "main.cpp" )
-  )
+  if not exists( os.path.join( BASE_ROOT, "source", "main.cpp" ) ):
+    shutil.copy2(
+      os.path.join( BOOTSTRAP_ROOT, "templates", "main.cpp" ),
+      os.path.join( BASE_ROOT, "source", "main.cpp" )
+    )
 
 def download_targets( target_list ):
   Log.info( "Downloading valid targets..." )

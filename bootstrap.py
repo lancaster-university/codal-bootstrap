@@ -167,6 +167,10 @@ def merge_json(base_obj, delta_obj):
     base_obj[k] = delta_obj[k]
   return base_obj
 
+def go_build():
+  sys.path.append( os.path.join(BASE_ROOT, "libraries", "codal") )
+  import_module( f'libraries.codal.build' )
+
 def go_build_docs():
   config = {
     "PROJECT_NAME": "Codal Project",
@@ -225,8 +229,7 @@ def go_bootstrap( target_list ):
       Log.warn( "WARNING: '--bootstrap' forces bootstrap to take over, downloaded build tools will not be run!" )
 
     if not options.force_bootstrap:
-      sys.path.append( os.path.join(BASE_ROOT, "libraries", "codal") )
-      import_module( f'libraries.codal.build' )
+      go_build()
       exit(0)
 
   parser = optparse.OptionParser(usage="usage: %prog target-name [options]", description="BOOTSTRAP MODE - Configures the current project directory for a specified target. Will defer to the latest build tools once configured.")
@@ -273,6 +276,9 @@ def go_bootstrap( target_list ):
 
       print( "Configuring from codal.json!" )
       go_configure( local_target )
+
+      # Jump to an actual build stage immediately, as older script-drivers will expect it
+      go_build()
       exit(0)
 
     Log.warn( "Please supply an initial target to build against:" )

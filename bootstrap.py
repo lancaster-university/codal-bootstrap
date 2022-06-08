@@ -263,7 +263,7 @@ def go_bootstrap( target_list ):
       os.path.join( BASE_ROOT, "build.py" )
     )
 
-    Log.info( "Done! Happy coding :)\n" )
+    Log.info( "Done!\n" )
 
     exit(0)
 

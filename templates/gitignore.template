@@ -1,6 +1,6 @@
 .vscode
 .yotta.json
-*.bin,
+*.bin
 *.DS_Store
 *.hex
 *.pyc

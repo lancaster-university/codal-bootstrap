@@ -275,7 +275,7 @@ def go_bootstrap( target_list ):
       local_target = local_config["target"]
 
       print( "Configuring from codal.json!" )
-      go_configure( local_target )
+      go_configure( local_target, local_config )
 
       # Jump to an actual build stage immediately, as older script-drivers will expect it
       go_build()
